@@ -1,0 +1,95 @@
+﻿version: '3.8'
+
+services:
+  # Nginx
+  proxy:
+    image: bunkerity/bunkerized-nginx:latest
+    ports:
+      - 80:8080
+    depends_on:
+      - gateway
+    environment:
+      - SERVER_NAME=localhost
+      - ALLOWED_METHODS=GET|POST|PUT|DELETE
+      - USE_MODSECURITY=no
+      - USE_DNSBL=no
+      - USE_LIMIT_REQ=no
+      - USE_FAIL2BAN=no
+      - USE_CLAMAV_UPLOAD=no
+      - USE_CLAMAV_SCAN=no
+    networks:
+      - http_api
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:management
+    expose:
+      - 15672
+    networks:
+      - services
+  # User DB
+  user_db:
+    image: postgres:latest
+    expose:
+      - 5432
+    networks:
+      - services
+  # Asset DB
+  asset_db:
+    image: postgres:latest
+    expose:
+      - 5432
+    networks:
+      - services
+  # Series DB
+  series_db:
+    image: postgres:latest
+    expose:
+      - 5432
+    networks:
+      - services
+  # Api
+  gateway:
+    image: onegate/gateway:latest
+    expose:
+      - 80
+    networks:
+      - http_api
+      - services
+  # User service
+  user_service:
+    image: onegate/user_service:latest
+    depends_on:
+      - rabbitmq
+    networks:
+      - services
+  # Asset service
+  asset_service:
+    image: onegate/asset_service:latest
+    depends_on:
+      - rabbitmq
+    networks:
+      - services
+  # Series service
+  series_service:
+    image: onegate/series_service:latest
+    depends_on:
+      - rabbitmq
+    networks:
+      - services
+  # Fake engine service
+  fake_engine:
+    image: onegate/fake_engine:latest
+    depends_on:
+      - rabbitmq
+    networks:
+      - services
+  fake_static_engine:
+    image: onegate/fake_static_engine:latest
+    depends_on:
+      - rabbitmq
+    networks:
+      - services
+networks:
+  http_api:
+  services:
+      

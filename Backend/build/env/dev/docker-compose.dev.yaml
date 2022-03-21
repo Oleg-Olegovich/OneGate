@@ -1,0 +1,65 @@
+﻿version: '3.8'
+
+services:
+  # Nginx
+  proxy:
+    volumes:
+      - ./env/dev/nginx:/server-confs
+  # RabbitMQ
+  rabbitmq:
+    ports:
+      - 15672:15672
+    env_file:
+      - ./env/dev/dev.env
+  # User DB
+  user_db:
+    ports:
+      - 8001:5432
+    volumes:
+      - user_db_dev:/var/lib/postgresql/data
+    env_file:
+      - ./env/dev/dev.env
+  # Asset DB
+  asset_db:
+    ports:
+      - 8002:5432
+    volumes:
+      - asset_db_dev:/var/lib/postgresql/data
+    env_file:
+      - ./env/dev/dev.env
+  # Series DB
+  series_db:
+    ports:
+      - 8003:5432
+    volumes:
+      - series_db_dev:/var/lib/postgresql/data
+    env_file:
+      - ./env/dev/dev.env
+  # Gateway
+  gateway:
+    env_file:
+      - ./env/dev/dev.env
+  # User service
+  user_service:
+    env_file:
+      - ./env/dev/dev.env
+  # Asset service
+  asset_service:
+    env_file:
+      - ./env/dev/dev.env
+  # Timeseries service
+  series_service:
+    env_file:
+      - ./env/dev/dev.env
+  # Fake engine service
+  fake_engine:
+    env_file:
+      - ./env/dev/dev.env
+  fake_static_engine:
+    env_file:
+      - ./env/dev/dev.env
+volumes:
+  user_db_dev:
+  asset_db_dev:
+  series_db_dev:
+  
